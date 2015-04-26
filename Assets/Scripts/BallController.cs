@@ -6,7 +6,14 @@ public class BallController : MonoBehaviour
 	public float moveSpeed;
 	public float jumpspeed;
 	bool isGrounded = true;
-	
+	private Vector3 spawn;
+	public GameObject deathParticle;
+
+	void Start () 
+	{
+		spawn = transform.position;
+		}
+		
 	void Update () 
 	{
 		float x = Input.GetAxis ("Horizontal")*moveSpeed * Time.deltaTime;
@@ -21,9 +28,15 @@ public class BallController : MonoBehaviour
 		}
 		void OnCollisionEnter(Collision collision)
 		{
-		if (collision.collider.CompareTag("Ground"))
+		if (collision.collider.CompareTag("Ground")||(collision.collider.CompareTag("Platform")))
 		{
 			isGrounded = true;
+		}
+		if (collision.transform.tag == "Enemy")
+		{
+			LivesTracker.Instance.Addscore(-1);
+			Die();
+			
 		}
 	}
 	void OnTriggerEnter(Collider other)
@@ -34,4 +47,10 @@ public class BallController : MonoBehaviour
 			ScoreTracker.Instance.Addscore(10);
 		}
 	}
+	void Die()
+	{
+		Instantiate(deathParticle, transform.position, Quaternion.Euler(270,0,0));
+		            transform.position = spawn;
+		            }
+	
 }
